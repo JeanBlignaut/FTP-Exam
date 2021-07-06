@@ -112,29 +112,29 @@ namespace FTP_Exam_Server
                      CancellationToken ct)
         {
             Console.WriteLine("New client ({0}) connected", clientIndex);
-            using (client)
-            {
-                var s = new ArraySegment<byte>();
-                var buf = new byte[4096];
-                var stream = client.ReceiveAsync(s, SocketFlags.None); //.GetStream();
-                while (!ct.IsCancellationRequested)
-                {
-                    var timeoutTask = Task.Delay(TimeSpan.FromSeconds(15));
-                    var amountReadTask = stream.ReadAsync(buf, 0, buf.Length, ct);
-                    var completedTask = await Task.WhenAny(timeoutTask, amountReadTask)
-                                                  .ConfigureAwait(false);
-                    if (completedTask == timeoutTask)
-                    {
-                        var msg = Encoding.ASCII.GetBytes("Client timed out");
-                        await stream.WriteAsync(msg, 0, msg.Length);
-                        break;
-                    }
-                    var amountRead = amountReadTask.Result;
-                    if (amountRead == 0) break; //end of stream.
-                    await stream.WriteAsync(buf, 0, amountRead, ct)
-                                .ConfigureAwait(false);
-                }
-            }
+            //using (client)
+            //{
+            //    var s = new ArraySegment<byte>();
+            //    var buf = new byte[4096];
+            //    var stream = client.ReceiveAsync(s, SocketFlags.None); //.GetStream();
+            //    while (!ct.IsCancellationRequested)
+            //    {
+            //        var timeoutTask = Task.Delay(TimeSpan.FromSeconds(15));
+            //        var amountReadTask = stream.ReadAsync(buf, 0, buf.Length, ct);
+            //        var completedTask = await Task.WhenAny(timeoutTask, amountReadTask)
+            //                                      .ConfigureAwait(false);
+            //        if (completedTask == timeoutTask)
+            //        {
+            //            var msg = Encoding.ASCII.GetBytes("Client timed out");
+            //            await stream.WriteAsync(msg, 0, msg.Length);
+            //            break;
+            //        }
+            //        var amountRead = amountReadTask.Result;
+            //        if (amountRead == 0) break; //end of stream.
+            //        await stream.WriteAsync(buf, 0, amountRead, ct)
+            //                    .ConfigureAwait(false);
+            //    }
+            //}
             Console.WriteLine("Client ({0}) disconnected", clientIndex);
         }
     }

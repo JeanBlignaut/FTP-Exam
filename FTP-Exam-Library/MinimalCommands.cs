@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
+
 namespace FTP_Exam_Library
 {
     public enum MinimalCommands
@@ -11,12 +13,38 @@ namespace FTP_Exam_Library
         MODE, // Stream
         STRU, // File
 
+        RETR, // download
+        STOR, // upload
+
         CWD,  // Change Working Directory
         LIST
     }
 
 
+    public enum Structures : byte
+    {
+        [Description("File (no record structure) (default structure)")]
+        File = (byte)'F',
 
+        [Description("Record structure")]
+        Record = (byte)'R',
+
+        [Description("Page structure")]
+        Page = (byte)'P'
+    }
+
+    public enum RepresentationTypes
+    {
+        ASCII = (byte)'A',
+        EBDCIC = (byte)'E'
+    }
+
+    public enum TransferModes
+    {
+        Stream = (byte)'S',
+        Block = (byte)'B',
+        Compressed = (byte)'C'
+    }
 
     /*
     5.1.MINIMUM IMPLEMENTATION
