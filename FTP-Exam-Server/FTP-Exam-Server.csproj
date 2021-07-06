@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+    <RootNamespace>FTP_Exam_Server</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="System.Net.FtpClient.Async" />
+    <None Remove="FubarDev.FtpServer.Commands" />
+    <None Remove="FubarDev.FtpServer.Abstractions" />
+    <None Remove="FubarDev.FtpServer.FileSystem.DotNet" />
+    <None Remove="FubarDev.FtpServer.AccountManagement" />
+    <None Remove="FubarDev.FtpServer.MembershipProvider.Pam" />
+    <None Remove="FubarDev.FtpServer.FileSystem.Unix" />
+    <None Remove="FubarDev.FtpServer" />
+    <None Remove="Microsoft.Extensions.DependencyInjection" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="FubarDev.FtpServer.Commands" Version="3.1.1" />
+    <PackageReference Include="FubarDev.FtpServer.Abstractions" Version="3.1.1" />
+    <PackageReference Include="FubarDev.FtpServer.FileSystem.DotNet" Version="3.1.1" />
+    <PackageReference Include="FubarDev.FtpServer.MembershipProvider.Pam" Version="3.1.1" />
+    <PackageReference Include="FubarDev.FtpServer.FileSystem.Unix" Version="3.1.1" />
+    <PackageReference Include="FubarDev.FtpServer" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
+  </ItemGroup>
+</Project>

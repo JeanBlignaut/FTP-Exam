@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+    <RootNamespace>FTP_Exam_Client</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="CoreFtp" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="CoreFtp" Version="1.4.0" />
+  </ItemGroup>
+</Project>
