@@ -61,7 +61,8 @@ namespace FTP_Exam_Server
                 switch (Enum.Parse<MinimalCommands>(data.Substring(0, 4).Trim()))
                 {
                     case MinimalCommands.USER:
-                        remoteFileIOServerSide.clientSendHelper(StatusCodes.AccountNeeded, "Only anonamous implemented");
+                        if(data.Substring(4).Trim().ToLower() != "anonymous")
+                            remoteFileIOServerSide.clientSendHelper(StatusCodes.AccountNeeded, "Only anonamous implemented");
                         break;
                     case MinimalCommands.LIST:
                         remoteFileIOServerSide.LIST(data.Substring(4).Trim());
