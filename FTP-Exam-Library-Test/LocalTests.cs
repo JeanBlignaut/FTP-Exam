@@ -10,40 +10,40 @@ namespace FTP_Exam_IntegrationTests
     using XFS = MockUnixSupport;
     public class LocalTests
     {
-        [Fact]
-        public void ListTest()
-        {
-            // Arrange
-            var fileSystem = new MockFileSystem(new Dictionary<string, MockFileData>
-            {
-                { @"c:\myfile.txt", new MockFileData("Testing is meh.") },
-                { @"c:\demo\jQuery.js", new MockFileData("some js") },
-                { @"c:\demo\image.gif", new MockFileData(new byte[] { 0x12, 0x34, 0x56, 0xd2 }) }
-            });
+        //[Fact]
+        //public void ListTest()
+        //{
+        //    // Arrange
+        //    var fileSystem = new MockFileSystem(new Dictionary<string, MockFileData>
+        //    {
+        //        { @"c:\myfile.txt", new MockFileData("Testing is meh.") },
+        //        { @"c:\demo\jQuery.js", new MockFileData("some js") },
+        //        { @"c:\demo\image.gif", new MockFileData(new byte[] { 0x12, 0x34, 0x56, 0xd2 }) }
+        //    });
 
-            var fileIO = new LocalFileIO(fileSystem);
-            string path = XFS.Path(@"c:\");
-            var result = fileIO.List(path);
-        }
+        //    var fileIO = new LocalFileIO(fileSystem);
+        //    string path = XFS.Path(@"c:\");
+        //    var result = fileIO.List(path);
+        //}
 
-        [Fact]
-        public void ChangeWorkingDirectoryTest()
-        {
-            LocalFileIO.ChangeWorkingDirectory();
-        }
+        //[Fact]
+        //public void ChangeWorkingDirectoryTest()
+        //{
+        //    LocalFileIO.ChangeWorkingDirectory();
+        //}
 
-        [Fact]
-        public void RetrieveTest()
-        {
-            LocalFileIO.Retrieve();
-        }
+        //[Fact]
+        //public void RetrieveTest()
+        //{
+        //    LocalFileIO.Retrieve();
+        //}
 
 
-        [Fact]
-        public void StoreTest()
-        {
-            LocalFileIO.Store();
-        }
+        //[Fact]
+        //public void StoreTest()
+        //{
+        //    LocalFileIO.Store();
+        //}
 
     }
 }

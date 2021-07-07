@@ -11,37 +11,58 @@ namespace FTP_Exam_Library
 
         private IFileSystem fileSystem { get; init; }
 
-        public String CurrentWorkingDirectory { get; private set; }
+        private IDirectoryInfo _BaseDirectoryInfo { get; set; }
+        public string BaseDirectory => _BaseDirectoryInfo.FullName;
 
-        public LocalFileIO(IFileSystem filesystem)
+        private IDirectoryInfo _CWDirectoryInfo { get; set; }
+        public string CurrentWorkingDirectory => _CWDirectoryInfo.FullName;
+
+        public LocalFileIO(IFileSystem filesystem, string homeDirectoryPath)
         {
             fileSystem = filesystem;
+            _BaseDirectoryInfo = (DirectoryInfoBase) new DirectoryInfo(homeDirectoryPath);
+            _CWDirectoryInfo = _BaseDirectoryInfo;
         }
 
-        public IEnumerable<string> List(string? path = null)
+        private IEnumerable<string> List(IDirectoryInfo di)
         {
-            // Not abstracted properly
-            //IDirectoryInfo dirInfo = (DirectoryInfoBase)new DirectoryInfo(path);
-            //var dirs = dirInfo.EnumerateDirectories("*");
-            //var files = dirInfo.EnumerateFiles("*");
+            var dirs = di.EnumerateDirectories("*");
+            var files = di.EnumerateFiles("*");
 
-            //return dirs.Select(d => d.Name)
-            //    .Union(files.Select(f => f.Name));
+            return dirs.Select(d => d.Name)
+                .Union(files.Select(f => f.Name));
         }
 
-        public static void ChangeWorkingDirectory()
+        public IEnumerable<string> List()
         {
-            throw new NotImplementedException();
+            return List(_CWDirectoryInfo);
         }
 
-        public static void Retrieve()
+        public IEnumerable<string> List(string path)
         {
-            IFileInfo fi = (FileInfoBase)new FileInfo("test.txt");
-            //return fi;
-            throw new NotImplementedException();
+            var fullPath = Path.Combine(CurrentWorkingDirectory, path);
+            IDirectoryInfo di = (DirectoryInfoBase) new DirectoryInfo(fullPath);
+
+            return List(di);
         }
 
-        public static void Store()
+        public string ChangeWorkingDirectory(string path)
+        {
+            Path.GetFullPath(_CWDirectoryInfo.FullName);
+            var result = Path.Combine(_CWDirectoryInfo.FullName, path);
+            return result;
+        }
+
+        public Stream Retrieve(string path)
+        {
+            IFileInfo fi = (FileInfoBase)new FileInfo("path");
+            //if (fi.Exists)
+            //{
+                return fi.OpenRead();
+            //}
+        }
+
+        public void Store()
         {
             IFileInfo fi = (FileInfoBase)new FileInfo("test.txt");
             //return fi;

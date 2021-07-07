@@ -4,6 +4,7 @@ using FTP_Exam_Library;
 using System.IO.Abstractions;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace FTP_Exam_IntegrationTests
 {
@@ -14,39 +15,52 @@ namespace FTP_Exam_IntegrationTests
         {
             // Arrange
             IFileSystem fileSystem = new FileSystem();
-            string path = Path.GetTempPath();
-            var fileIO = new LocalFileIO(fileSystem);
 
-            var curdir = Environment.CurrentDirectory;
-            var tmppath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            //string path = Path.GetTempPath();
+
+            var basePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "FTP-Exam-Library-LocalIntegrationTests");
+
+            var fileIO = new LocalFileIO(fileSystem, basePath);
+
+            IEnumerable<string> result;
 
             try
             {
-                var result = fileIO.List(path);
+                result = fileIO.List(basePath);
             }
-            catch(Exception e)
+            catch (DirectoryNotFoundException dnfe)
             {
-                throw e;
+                var di = new DirectoryInfo(basePath);
+                di.Create();
+                result = fileIO.List(basePath);
             }
+
+            Assert.Empty(result);
+
+            Assert.Throws<DirectoryNotFoundException>(() => fileIO.List(Path.Combine(basePath, "DoesNotExist")));
+
         }
 
         [Fact]
         public void ChangeWorkingDirectoryTest()
         {
-            LocalFileIO.ChangeWorkingDirectory();
+            //LocalFileIO.ChangeWorkingDirectory();
+            throw new NotImplementedException();
         }
 
         [Fact]
         public void RetrieveTest()
         {
-            LocalFileIO.Retrieve();
+            //LocalFileIO.Retrieve();
+            throw new NotImplementedException();
         }
 
 
         [Fact]
         public void StoreTest()
         {
-            LocalFileIO.Store();
+            //LocalFileIO.Store();
+            throw new NotImplementedException();
         }
 
     }
