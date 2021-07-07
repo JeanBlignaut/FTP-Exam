@@ -54,7 +54,7 @@ namespace FTP_Exam_Library
             IDirectoryInfo di = (DirectoryInfoBase) new DirectoryInfo(newPath);
             if (!di.Exists)
             {
-                throw new DirectoryNotFoundException();
+                throw new DirectoryNotFoundException($"Error: Directory '{newPath}' not found");
             }
             _CWDirectoryInfo = di;
             Environment.CurrentDirectory = CurrentWorkingDirectory;
@@ -87,6 +87,19 @@ namespace FTP_Exam_Library
 
             stream.Write(buffer);
 
+        }
+
+        public Stream Store(string path)
+        {
+            var filename = Path.GetFileName(path);
+
+            var fullPath = Path.Combine(CurrentWorkingDirectory, filename);
+
+            IFileInfo fi = (FileInfoBase)new FileInfo(fullPath);
+
+            var stream = fi.OpenWrite();
+
+            return stream;
         }
     }
 }
