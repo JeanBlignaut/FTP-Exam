@@ -7,7 +7,7 @@ using System.Text;
 
 namespace FTP_Exam_Library
 {
-    public class RemoteFileIOServer
+    public class RemoteFileIOServerSide
     {
         private Socket client;
         private LocalFileIO fileIO;
@@ -15,7 +15,7 @@ namespace FTP_Exam_Library
         private IPAddress _ipAddress;
         private Socket clientData;
 
-        public RemoteFileIOServer(Socket connectedClient, LocalFileIO localFileIO, IPAddress ipAddress, int dataPort)
+        public RemoteFileIOServerSide(Socket connectedClient, LocalFileIO localFileIO, IPAddress ipAddress, int dataPort)
         {
             client = connectedClient;
             fileIO = localFileIO;
@@ -23,7 +23,7 @@ namespace FTP_Exam_Library
             _dataPort = dataPort;
         }
 
-        private void clientSendHelper(StatusCodes statusCode, string message)
+        public void clientSendHelper(StatusCodes statusCode, string message)
         {
             var response = Encoding.ASCII.GetBytes($"{statusCode} {message.Trim()}\n");
             client.Send(response);

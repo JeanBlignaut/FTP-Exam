@@ -5,10 +5,8 @@ using System.Net.Sockets;
 using System.Text;
 using System.Linq;
 using System.Threading;
-using FubarDev.FtpServer;
-using FubarDev.FtpServer.FileSystem.DotNet;
-using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
+using FTP_Exam_Library;
 
 namespace FTP_Exam_Server
 {
@@ -16,11 +14,18 @@ namespace FTP_Exam_Server
     {
         static void Main(string[] args)
         {
-
             var cts = new CancellationTokenSource();
-            IPHostEntry host = Dns.GetHostEntry("localhost");
-            IPAddress ipAddress = host.AddressList.First(ip => ip.AddressFamily == AddressFamily.InterNetwork);
+
+            //Get IP from dns lookup
+            //IPHostEntry host = Dns.GetHostEntry("localhost");
+            //IPAddress ipAddress = host.AddressList.First(ip => ip.AddressFamily == AddressFamily.InterNetwork);
+
+            // Bind to all ipAdresses
+            IPAddress ipAddress = new IPAddress(new byte[4] { 0, 0, 0, 0 });
             IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 21);
+
+            int dataPort = 2020; // this is meant to be a range of ports
+            string baseFsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "FTP-Exam-Library-LocalIntegrationTests");
 
             var listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             listener.Bind(localEndPoint);
@@ -29,18 +34,44 @@ namespace FTP_Exam_Server
 
             var handler = listener.Accept();
 
+            RemoteFileIOServerSide remoteFileIOServerSide = new RemoteFileIOServerSide(handler, new LocalFileIO(baseFsPath), ipAddress, dataPort);
+
             // Incoming data from the client.    
-            string data = null;
-            byte[] bytes = null;
+            string data = string.Empty;
+            byte[] bytes = new byte[1024];
 
 
-            handler.Send(System.Text.Encoding.ASCII.GetBytes("220 Hello old chap"));
+            handler.Send(System.Text.Encoding.ASCII.GetBytes($"{StatusCodes.SendUserCommand} Hello old chap"));
+            remoteFileIOServerSide.clientSendHelper(StatusCodes.SendUserCommand, $"Hello {handler.RemoteEndPoint} this is {handler.LocalEndPoint}");
 
             while (true)
             {
-                bytes = new byte[1024];
-                int bytesRec = handler.Receive(bytes);
-                data += Encoding.ASCII.GetString(bytes, 0, bytesRec);
+                data = string.Empty;
+
+                while (handler.Receive(bytes) > 0 || data.IndexOf("<EOF>") > -1)
+                {
+                    data += Encoding.ASCII.GetString(bytes, 0, bytes.Length);
+                }
+
+                switch (Enum.Parse<MinimalCommands>(data.Substring(0, 4).Trim()))
+                {
+                    case MinimalCommands.LIST:
+                        remoteFileIOServerSide.LIST(data.Substring(4).Trim());
+                        break;
+                    case MinimalCommands.STOR:
+                        remoteFileIOServerSide.STOR(data.Substring(4).Trim());
+                        break;
+                    case MinimalCommands.RETR:
+                        remoteFileIOServerSide.RETR(data.Substring(4).Trim());
+                        break;
+                    case MinimalCommands.CWD:
+                        remoteFileIOServerSide.CWD(data.Substring(4).Trim());
+                        break;
+                    default :
+                        remoteFileIOServerSide.clientSendHelper(StatusCodes.CommandNotImplemented, "Command not implemented");
+                        break;
+                }
+
                 if (data.IndexOf("<EOF>") > -1)
                 {
                     break;
@@ -53,46 +84,6 @@ namespace FTP_Exam_Server
             handler.Send(msg);
             handler.Shutdown(SocketShutdown.Both);
             handler.Close();
-
-            //// Setup dependency injection
-            //var services = new ServiceCollection();
-
-            //// use %TEMP%/TestFtpServer as root folder
-            //services.Configure<DotNetFileSystemOptions>(opt => opt
-            //    .RootPath = Path.Combine(Path.GetTempPath(), "TestFtpServer"));
-
-            //// Add FTP server services
-            //// DotNetFileSystemProvider = Use the .NET file system functionality
-            //// AnonymousMembershipProvider = allow only anonymous logins
-            //services.AddFtpServer(builder => builder
-            //    //.UseDotNetFileSystem() // Use the .NET file system functionality
-            //    .EnablePamAuthentication()
-            //    .UsePamUserHome()
-            //    .UseUnixFileSystem());
-            //    //.EnableAnonymousAuthentication()); // allow anonymous logins
-
-            //// Configure the FTP server
-            //services.Configure<FtpServerOptions>(opt =>
-            //{
-            //    opt.ServerAddress = "127.0.0.1";
-            //    //opt.Port = 2021;
-            //});
-
-            //// Build the service provider
-            //using (var serviceProvider = services.BuildServiceProvider())
-            //{
-            //    // Initialize the FTP server
-            //    var ftpServerHost = serviceProvider.GetRequiredService<IFtpServerHost>();
-
-            //    // Start the FTP server
-            //    ftpServerHost.StartAsync(CancellationToken.None).Wait();
-
-            //    Console.WriteLine("Press ENTER/RETURN to close the test application.");
-            //    Console.ReadLine();
-
-            //    // Stop the FTP server
-            //    ftpServerHost.StopAsync(CancellationToken.None).Wait();
-            //}
         }
 
         async Task AcceptClientsAsync(Socket listener, CancellationToken ct)

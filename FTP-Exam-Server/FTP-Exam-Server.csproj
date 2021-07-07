@@ -28,4 +28,7 @@
     <PackageReference Include="FubarDev.FtpServer" Version="3.1.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FTP-Exam-Library\FTP-Exam-Library.csproj" />
+  </ItemGroup>
 </Project>

@@ -104,7 +104,7 @@ namespace FTP_Exam_Library
         //ActionNotTakenInsufficientSpace = 452,
         //CommandSyntaxError = 500,
         ArgumentSyntaxError = 501,
-        //CommandNotImplemented = 502,
+        CommandNotImplemented = 502,
         //BadCommandSequence = 503,
         //NotLoggedIn = 530,
         //AccountNeeded = 532,

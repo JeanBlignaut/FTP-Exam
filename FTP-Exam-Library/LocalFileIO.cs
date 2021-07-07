@@ -25,6 +25,14 @@ namespace FTP_Exam_Library
             Environment.CurrentDirectory = CurrentWorkingDirectory;
         }
 
+        public LocalFileIO(string homeDirectoryPath)
+        {
+            fileSystem = new FileSystem();
+            _BaseDirectoryInfo = (DirectoryInfoBase)new DirectoryInfo(homeDirectoryPath);
+            _CWDirectoryInfo = _BaseDirectoryInfo;
+            Environment.CurrentDirectory = CurrentWorkingDirectory;
+        }
+
         private IEnumerable<string> List(IDirectoryInfo di)
         {
             var dirs = di.EnumerateDirectories("*");
