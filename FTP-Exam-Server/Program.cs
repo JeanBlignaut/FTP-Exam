@@ -51,18 +51,26 @@ namespace FTP_Exam_Server
             {
                 data = string.Empty;
 
-                while (handler.Receive(bytes) > 0 || data.IndexOf("<EOL>") > -1 || data.IndexOf("<EOF>") > -1)
+                while (handler.Receive(bytes) > 0 || data.IndexOf("<EOL>") > -1 || data.IndexOf("<EOF>") > -1 || data.IndexOf("\n") > -1)
                 {
                     data += Encoding.ASCII.GetString(bytes, 0, bytes.Length);
                 }
+
+                data = data.Substring(0, data.IndexOf(Environment.NewLine));
 
                 Console.WriteLine($"Received: {data}");
 
                 switch (Enum.Parse<MinimalCommands>(data.Substring(0, 4).Trim()))
                 {
                     case MinimalCommands.USER:
-                        if(data.Substring(4).Trim().ToLower() != "anonymous")
+                        if (data.Substring(4).Trim().ToLower() != "anonymous")
+                        {
                             remoteFileIOServerSide.clientSendHelper(StatusCodes.AccountNeeded, "Only anonamous implemented");
+                        }
+                        else
+                        {
+                            remoteFileIOServerSide.clientSendHelper(StatusCodes.LoggedInProceed, $"Welcome {data.Substring(4).Trim().ToLower()}");
+                        }
                         break;
                     case MinimalCommands.LIST:
                         remoteFileIOServerSide.LIST(data.Substring(4).Trim());
