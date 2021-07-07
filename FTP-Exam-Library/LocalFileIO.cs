@@ -22,6 +22,7 @@ namespace FTP_Exam_Library
             fileSystem = filesystem;
             _BaseDirectoryInfo = (DirectoryInfoBase) new DirectoryInfo(homeDirectoryPath);
             _CWDirectoryInfo = _BaseDirectoryInfo;
+            Environment.CurrentDirectory = CurrentWorkingDirectory;
         }
 
         private IEnumerable<string> List(IDirectoryInfo di)
@@ -49,24 +50,43 @@ namespace FTP_Exam_Library
         public string ChangeWorkingDirectory(string path)
         {
             Path.GetFullPath(_CWDirectoryInfo.FullName);
-            var result = Path.Combine(_CWDirectoryInfo.FullName, path);
-            return result;
+            var newPath = Path.Combine(_CWDirectoryInfo.FullName, path);
+            IDirectoryInfo di = (DirectoryInfoBase) new DirectoryInfo(newPath);
+            if (!di.Exists)
+            {
+                throw new DirectoryNotFoundException();
+            }
+            _CWDirectoryInfo = di;
+            Environment.CurrentDirectory = CurrentWorkingDirectory;
+            return CurrentWorkingDirectory;
         }
 
         public Stream Retrieve(string path)
         {
-            IFileInfo fi = (FileInfoBase)new FileInfo("path");
+
+            var filename = Path.GetFileName(path);
+
+            var fullPath = Path.Combine(CurrentWorkingDirectory, filename);
+
+            IFileInfo fi = (FileInfoBase)new FileInfo(fullPath);
             //if (fi.Exists)
             //{
                 return fi.OpenRead();
             //}
         }
 
-        public void Store()
+        public void Store(string path, byte[] buffer)
         {
-            IFileInfo fi = (FileInfoBase)new FileInfo("test.txt");
-            //return fi;
-            throw new NotImplementedException();
+            var filename = Path.GetFileName(path);
+
+            var fullPath = Path.Combine(CurrentWorkingDirectory, filename);
+
+            IFileInfo fi = (FileInfoBase)new FileInfo(fullPath);
+
+            var stream = fi.OpenWrite();
+
+            stream.Write(buffer);
+
         }
     }
 }

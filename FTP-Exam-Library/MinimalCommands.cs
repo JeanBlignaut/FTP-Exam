@@ -71,7 +71,7 @@ namespace FTP_Exam_Library
     */
 
 
-    public enum StatusCode
+    public enum StatusCodes
     {
         //Undefined = 0,
         //RestartMarker = 110,
