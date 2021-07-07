@@ -32,7 +32,11 @@ namespace FTP_Exam_Server
 
             listener.Listen(10);
 
+            Console.WriteLine($"Bound to {listener.LocalEndPoint}");
+
             var handler = listener.Accept();
+
+            Console.WriteLine($"Connection received from {handler.RemoteEndPoint}");
 
             RemoteFileIOServerSide remoteFileIOServerSide = new RemoteFileIOServerSide(handler, new LocalFileIO(baseFsPath), ipAddress, dataPort);
 
@@ -40,21 +44,25 @@ namespace FTP_Exam_Server
             string data = string.Empty;
             byte[] bytes = new byte[1024];
 
-
-            handler.Send(System.Text.Encoding.ASCII.GetBytes($"{StatusCodes.SendUserCommand} Hello old chap"));
+            //handler.Send(System.Text.Encoding.ASCII.GetBytes($"{StatusCodes.SendUserCommand} Hello old chap"));
             remoteFileIOServerSide.clientSendHelper(StatusCodes.SendUserCommand, $"Hello {handler.RemoteEndPoint} this is {handler.LocalEndPoint}");
 
             while (true)
             {
                 data = string.Empty;
 
-                while (handler.Receive(bytes) > 0 || data.IndexOf("<EOF>") > -1)
+                while (handler.Receive(bytes) > 0 || data.IndexOf("<EOL>") > -1 || data.IndexOf("<EOF>") > -1)
                 {
                     data += Encoding.ASCII.GetString(bytes, 0, bytes.Length);
                 }
 
+                Console.WriteLine($"Received: {data}");
+
                 switch (Enum.Parse<MinimalCommands>(data.Substring(0, 4).Trim()))
                 {
+                    case MinimalCommands.USER:
+                        remoteFileIOServerSide.clientSendHelper(StatusCodes.AccountNeeded, "Only anonamous implemented");
+                        break;
                     case MinimalCommands.LIST:
                         remoteFileIOServerSide.LIST(data.Substring(4).Trim());
                         break;

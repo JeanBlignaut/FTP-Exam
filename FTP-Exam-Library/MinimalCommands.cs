@@ -107,7 +107,7 @@ namespace FTP_Exam_Library
         CommandNotImplemented = 502,
         //BadCommandSequence = 503,
         //NotLoggedIn = 530,
-        //AccountNeeded = 532,
+        AccountNeeded = 532,
         ActionNotTakenFileUnavailable = 550,
         //ActionAbortedUnknownPageType = 551,
         //FileActionAborted = 552,
